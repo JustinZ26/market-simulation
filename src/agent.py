@@ -1,25 +1,40 @@
 import random
 
 class RandomAgent:
-    def __init__(self, name):
+    def __init__(self, name, trade_side = None):
         self.name = name
+        self.trade_side = trade_side
 
     def act(self, orderbook):
-        side = random.choice(["buy", "sell"])
-        volume = random.randint(1, 5)
-
         best_bid = orderbook.best_bid()
         best_ask = orderbook.best_ask()
 
-        # If no market exists yet, start one
-        if best_bid is None or best_ask is None:
-            mid = 100
+        # If market empty: agent does nothing
+        if best_bid is None and best_ask is None:
+            return  
+
+        # Pick a side
+        side = self.trade_side or random.choice(["buy", "sell"])
+
+        volume = random.randint(1, 5)
+        
+        # If one side missing, make a fallback mid (spread wide)
+        if best_bid is None:
+            mid = best_ask - 1
+        elif best_ask is None:
+            mid = best_bid + 1
         else:
             mid = (best_bid + best_ask) // 2
 
-        # random offset around mid price
-        offset = random.randint(-5, 5)
-        price = mid + offset
+        offset = random.randint(1, 5)
+
+        if side == "buy":
+            price = mid - offset
+        else:  # sell
+            price = mid + offset
+
+        if price < 1: #cant place order less than 1
+            price = 1
 
         orderbook.add_order(side, price, volume)
         print(f"{self.name}: placed {side} {volume} @ {price}")
