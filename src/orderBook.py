@@ -61,7 +61,7 @@ class OrderBook:
                 return
             self.bids[price] -= volume #delete order
             if self.bids[price] <= 0:
-                leftover = abs(self.bids[price])
+                # leftover = abs(self.bids[price])
                 del self.bids[price]
                 # return leftover #TODO we can directly execute order for the next level
 
@@ -71,7 +71,7 @@ class OrderBook:
                 return
             self.asks[price] -= volume #delete order
             if self.asks[price] <= 0:
-                leftover = abs(self.asks[price])
+                # leftover = abs(self.asks[price])
                 del self.asks[price]
                 # return leftover #TODO we can directly execute order for the next level
     

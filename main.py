@@ -1,5 +1,5 @@
 from src.orderBook import OrderBook
-from src.agent import RandomAgent
+from RandomAgent import RandomAgent
 from src.marketMaker import MarketMaker
 from src.marketOrder import MarketOrderAgent
 
@@ -75,10 +75,10 @@ agents = [
     MarketOrderAgent("The Fomo Retail2", "sell"),
     MarketOrderAgent("agent"),
     MarketOrderAgent("agent"),
-    MarketOrderAgent("agent"),
-    MarketOrderAgent("agent"),
-    MarketOrderAgent("agent"),
-    MarketOrderAgent("agent")
+    # MarketOrderAgent("agent"),
+    # MarketOrderAgent("agent"),
+    # MarketOrderAgent("agent"),
+    # MarketOrderAgent("agent")
 
 ]
 
@@ -90,7 +90,7 @@ for step in range(10000):
     book.display()
     update_history()
     update_graph()
-    time.sleep(0)
+    time.sleep(0.2)
 
 
 # Keep the plot displayed after the loop finishes

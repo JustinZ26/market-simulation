@@ -30,6 +30,8 @@ class RandomAgent:
 
         if side == "buy":
             price = mid - offset
+            # if price >= best_ask:
+            #     price = best_ask
         else:  # sell
             price = mid + offset
 
