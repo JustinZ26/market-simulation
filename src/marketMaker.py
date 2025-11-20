@@ -27,7 +27,7 @@ class MarketMaker:
     # -------------------------
     # Public API
     # -------------------------
-    def act(self, orderbook):
+    def act(self, orderbook, history):
         """
         Called every simulation tick. The MM will:
          - determine a safe mid price (blend of market and fair)

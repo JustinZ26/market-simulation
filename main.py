@@ -1,15 +1,72 @@
 from src.orderBook import OrderBook
-from RandomAgent import RandomAgent
+from src.randomAgent import RandomAgent
 from src.marketMaker import MarketMaker
 from src.marketOrder import MarketOrderAgent
+from src.trendFollower import TrendFollower
 
 import matplotlib.pyplot as plt
 import random
 import time
+import mplfinance as mpf
+import pandas as pd
 
 book = OrderBook()
 history = []
 
+CANDLE_WINDOW = 5
+
+candle_fig = None
+candle_ax = None
+
+def update_candles(history):
+    global candle_fig, candle_ax
+
+    if len(history) < CANDLE_WINDOW:
+        return
+
+    # Convert history into OHLC
+    ohlc = []
+    for i in range(0, len(history), CANDLE_WINDOW):
+        chunk = history[i:i+CANDLE_WINDOW]
+        if len(chunk) < CANDLE_WINDOW:
+            break
+            
+        ohlc.append([
+            chunk[0],      # open
+            max(chunk),    # high
+            min(chunk),    # low
+            chunk[-1],     # close
+        ])
+
+    df = pd.DataFrame(ohlc, columns=["Open", "High", "Low", "Close"])
+    df.index = pd.date_range("2024-01-01", periods=len(df))
+
+    # First-time initialization
+    if candle_fig is None:
+        candle_fig, axes = mpf.plot(
+            df,
+            type='candle',
+            style='charles',
+            returnfig=True
+        )
+
+        candle_ax = axes[0]  # <-- FIXED: use first (and only) axis
+
+        plt.show(block=False)
+        return
+
+    # Update existing figure
+    candle_ax.clear()
+
+    mpf.plot(
+        df,
+        type='candle',
+        style='charles',
+        ax=candle_ax
+    )
+
+    candle_fig.canvas.draw()
+    candle_fig.canvas.flush_events()
 def update_graph():
     line.set_ydata(history)
     line.set_xdata(range(len(history))) 
@@ -39,8 +96,8 @@ def update_history():
         # only ask side exists
         mid = ask
     else:
-        # both sides empty (very rare)
-        mid = None
+        # both sides empty, add last midpoint
+        mid = history[-1]
 
     history.append(mid)
 
@@ -58,39 +115,35 @@ book.add_order("buy", 100, 20)
 book.add_order("sell", 101, 20)
 
 agents = [
-    RandomAgent("random1", "buy"),
-    RandomAgent("random2", "buy"),
-    RandomAgent("random3", "buy"),
-    RandomAgent("random4", "buy"),
-    RandomAgent("random5", "buy"),
-    RandomAgent("random6", "sell"),
-    RandomAgent("random7", "sell"),
-    RandomAgent("random8", "sell"),
-    RandomAgent("random9", "sell"),
-    RandomAgent("random10", "sell"),
-
-    MarketMaker("MarketMaker"),
-
-    MarketOrderAgent("The Fomo Retail", "buy"),
-    MarketOrderAgent("The Fomo Retail2", "sell"),
-    MarketOrderAgent("agent"),
-    MarketOrderAgent("agent"),
-    # MarketOrderAgent("agent"),
-    # MarketOrderAgent("agent"),
-    # MarketOrderAgent("agent"),
-    # MarketOrderAgent("agent")
-
+    MarketMaker("MarketMaker")
 ]
+
+#number of agent
+N_Random_Agent = 300
+N_Market_Order_Agent = 125
+N_Trend_Follower_Agent = 50
+
+#add random agent
+for x in range(N_Random_Agent):
+    agents.append(RandomAgent(f"RandomAgent{x+1}"))
+
+for x in range(N_Market_Order_Agent):
+    agents.append(MarketOrderAgent(f"MarketOrderAgent{x+1}"))
+
+for x in range(N_Trend_Follower_Agent):
+    agents.append(TrendFollower(f"TrendFollowerAgent{x+1}"))
+
 
 for step in range(10000):
     random.shuffle(agents) #to mix them up to simulate unpredictability
     for agent in agents:
-        agent.act(book)
+        agent.act(book, history)
     book.match()
     book.display()
     update_history()
     update_graph()
-    time.sleep(0.2)
+    update_candles(history)
+    time.sleep(0.01)
 
 
 # Keep the plot displayed after the loop finishes

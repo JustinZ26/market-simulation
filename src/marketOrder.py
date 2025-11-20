@@ -5,7 +5,7 @@ class MarketOrderAgent:
         self.name = name
         self.side = side  # optional: force always buy or always sell
 
-    def act(self, orderbook):
+    def act(self, orderbook, history):
         # If the book is totally empty → nothing to do
         if orderbook.best_bid() is None and orderbook.best_ask() is None:
             print(f"{self.name}: No liquidity, cannot execute market order.")
@@ -13,7 +13,8 @@ class MarketOrderAgent:
 
         # Choose side (fixed or random)
         side = self.side or random.choice(["buy", "sell"])
-        volume = random.randint(1, 5)
+        # volume = random.randint(1, 5)
+        volume = 1
 
         print(f"{self.name}: MARKET {side.upper()} {volume}")
 
