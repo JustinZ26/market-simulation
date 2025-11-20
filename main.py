@@ -3,6 +3,7 @@ from src.randomAgent import RandomAgent
 from src.marketMaker import MarketMaker
 from src.marketOrder import MarketOrderAgent
 from src.trendFollower import TrendFollower
+from src.whale import WhaleAgent
 
 import matplotlib.pyplot as plt
 import random
@@ -13,7 +14,7 @@ import pandas as pd
 book = OrderBook()
 history = []
 
-CANDLE_WINDOW = 5
+CANDLE_WINDOW = 20
 
 candle_fig = None
 candle_ax = None
@@ -120,8 +121,9 @@ agents = [
 
 #number of agent
 N_Random_Agent = 300
-N_Market_Order_Agent = 125
-N_Trend_Follower_Agent = 50
+N_Market_Order_Agent = 50
+N_Trend_Follower_Agent = 100
+N_Whale_Agent = 10
 
 #add random agent
 for x in range(N_Random_Agent):
@@ -133,6 +135,8 @@ for x in range(N_Market_Order_Agent):
 for x in range(N_Trend_Follower_Agent):
     agents.append(TrendFollower(f"TrendFollowerAgent{x+1}"))
 
+for x in range(N_Whale_Agent):
+    agents.append(WhaleAgent(f"WhaleAgent{x+1}"))
 
 for step in range(10000):
     random.shuffle(agents) #to mix them up to simulate unpredictability
