@@ -6,7 +6,7 @@ class TrendFollower():
 
     def act(self, orderbook, history):
         # volume = random.randint(1, 5)
-        volume = 1
+        volume = 5
 
         # 5 midpoint from the newest - the newest midpoint
         price_difference = history[-5] - history[-1] if len(history) >= 5 else 0 

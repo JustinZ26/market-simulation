@@ -14,7 +14,7 @@ import pandas as pd
 book = OrderBook()
 history = []
 
-CANDLE_WINDOW = 20
+CANDLE_WINDOW = 5
 
 candle_fig = None
 candle_ax = None
@@ -41,13 +41,17 @@ def update_candles(history):
 
     df = pd.DataFrame(ohlc, columns=["Open", "High", "Low", "Close"])
     df.index = pd.date_range("2024-01-01", periods=len(df))
+    # df.index = pd.RangeIndex(start=0, stop=len(df))
+
+    mc = mpf.make_marketcolors(up = 'g', down= 'r')
+    s = mpf.make_mpf_style(base_mpf_style = 'charles', marketcolors = mc)
 
     # First-time initialization
     if candle_fig is None:
         candle_fig, axes = mpf.plot(
             df,
             type='candle',
-            style='charles',
+            style=s,
             returnfig=True
         )
 
@@ -57,17 +61,20 @@ def update_candles(history):
         return
 
     # Update existing figure
-    candle_ax.clear()
+    # candle_ax.clear()
 
     mpf.plot(
         df,
         type='candle',
-        style='charles',
-        ax=candle_ax
+        style=s, # <--- Reuse the consistent style
+        ax=candle_ax,
+        # fig=candle_fig # <--- Pass the figure reference
     )
 
     candle_fig.canvas.draw()
     candle_fig.canvas.flush_events()
+
+
 def update_graph():
     line.set_ydata(history)
     line.set_xdata(range(len(history))) 
@@ -120,9 +127,9 @@ agents = [
 ]
 
 #number of agent
-N_Random_Agent = 300
-N_Market_Order_Agent = 50
-N_Trend_Follower_Agent = 100
+N_Random_Agent = 1000
+N_Market_Order_Agent = 300
+N_Trend_Follower_Agent = 200
 N_Whale_Agent = 10
 
 #add random agent
@@ -147,7 +154,7 @@ for step in range(10000):
     update_history()
     update_graph()
     update_candles(history)
-    time.sleep(0.01)
+    # time.sleep(0.01)
 
 
 # Keep the plot displayed after the loop finishes

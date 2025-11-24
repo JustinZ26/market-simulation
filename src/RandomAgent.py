@@ -20,7 +20,7 @@ class RandomAgent:
         side = self.trade_side or random.choice(["buy", "sell"])
 
         # volume = random.randint(1, 5)
-        volume = 1
+        volume = 3
         
         # If one side missing, make a fallback mid (spread wide)
         if best_bid is None:
